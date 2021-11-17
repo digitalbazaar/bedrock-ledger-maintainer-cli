@@ -9,6 +9,7 @@
 
 const yargs = require('yargs');
 const util = require('util');
+const App = require('./App');
 
 // print out unhandled errors
 process.on(
@@ -57,8 +58,12 @@ _setupCLIOptions(yargs);
 yargs.scriptName('vom')
   .usage('$0 <cmd> [args]')
   .command('create', 'create a witness pool doc', async ({argv}) => {
+    const app = new App(argv);
+    return app.create();
   })
   .command('update', 'update ledger nodes', async ({argv}) => {
+    const app = new App(argv);
+    return app.update();
   })
   .help()
   .argv;
