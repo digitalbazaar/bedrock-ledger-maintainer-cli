@@ -3,8 +3,10 @@
  *  Copyright (c) 2021 Digital Bazaar, Inc. All rights reserved.
 */
 
+const crypto = require('crypto');
 const {WebLedgerClient} = require('web-ledger-client');
 const v1 = require('did-veres-one');
+const didKeyDriver = require('@digitalbazaar/did-method-key').driver();
 const {
   Ed25519VerificationKey2020
 } = require('@digitalbazaar/ed25519-verification-key-2020');
@@ -92,7 +94,36 @@ function deepClone(json) {
  *
  * @returns {Promise<object>} The resulting key and helpers methods.
  */
-async function getKey({maintainerKey, veresMode, httpsAgent, hostname}) {
+async function getKey({
+  maintainerKey,
+  didMethod,
+  veresMode,
+  httpsAgent,
+  hostname
+}) {
+  switch(didMethod.toLowerCase()) {
+    case 'v1': {
+      return _createV1Key({
+        maintainerKey,
+        didMethod,
+        veresMode,
+        httpsAgent,
+        hostname
+      });
+    }
+    case 'key': {
+      return _createDIDKey({
+        maintainerKey,
+      });
+    }
+    default: {
+      throw new Error(
+        `parameter "didMethod" must be "v1" or "key" received "${didMethod}"`);
+    }
+  }
+}
+
+async function _createV1Key({maintainerKey, veresMode, httpsAgent, hostname}) {
   const options = {
     mode: veresMode,
     httpsAgent,
@@ -104,9 +135,20 @@ async function getKey({maintainerKey, veresMode, httpsAgent, hostname}) {
     return veresDriver.generate(
       {didType: 'nym', keyType: 'Ed25519VerificationKey2020'});
   }
+  // this a json object with public and private key material
   const keyOps = require(maintainerKey);
   const invokeKey = new Ed25519VerificationKey2020(keyOps);
   return veresDriver.generate({invokeKey});
+
+}
+
+async function _createDIDKey({maintainerKey}) {
+  // FIXME this should support multi-codec
+  // creates 32 byte hashes for passwords
+  const hash32 = crypto.createHash('sha256');
+  hash32.update(maintainerKey);
+  const seed = hash32.digest();
+  return didKeyDriver.generate({seed});
 }
 
 module.exports = {
