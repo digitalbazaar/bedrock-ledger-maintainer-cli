@@ -4,8 +4,7 @@
 */
 
 const https = require('https');
-const v1 = require('did-veres-one');
-const {parseNodes, deepClone, getKey} = require('./helpers');
+const {parseNodes, getKey, signOperation} = require('./helpers');
 
 /**
  * The MaintainerApp glues all the various services into a single App.
@@ -94,12 +93,54 @@ class App {
       secondary: await parseNodes(secondary, httpsAgent)
     };
   }
-
+  async signAndSendOperation({operation, key, didMethod}) {
+    console.log('sending operation', JSON.stringify(operation, null, 2));
+    console.log(JSON.stringify({
+      primaryNodes: this.primaryWitnessCandidate,
+      secondaryNodes: this.secondaryWitnessCandidate,
+      totalNodes: this.totalNodeCount,
+      maxFaults: this.maxFaults
+    }, null, 2));
+    const signed = await signOperation({operation, key, didMethod});
+    await this.primaryLedgerClient.sendOperation({operation: signed});
+  }
+  // fetches all the ledger node and config information from all nodes
+  async setup() {
+    // parse the nodes from the cli command
+    this.nodes = await this.getNodes();
+    // find the genesis pool of the first primary node
+    const {found, meta} = await this.findGenesisPool();
+    return {nodes: this.nodes, meta, found};
+  }
   async create() {
-
+    await this.setup();
+    const {httpsAgent, maintainerKey, veresMode, didMethod} = this;
+    // get the maintainer key or generate a new one
+    const {didDocument, methodFor} = await getKey({
+      maintainerKey,
+      httpsAgent,
+      didMethod,
+      veresMode,
+      hostname: this.primaryNode.url.host
+    });
+    // use the capabilityInvocation key
+    const key = methodFor({purpose: 'capabilityInvocation'});
+    // sign the operation and send it to the ledger
+    await this.signAndSendOperation({operation, key, didMethod});
   }
   async update() {
-
+    await this.setup();
+    const {httpsAgent, maintainerKey, veresMode, didMethod} = this;
+    // get the maintainer key or generate a new one
+    const {didDocument, methodFor} = await getKey({
+      maintainerKey,
+      httpsAgent,
+      didMethod,
+      veresMode,
+      hostname: this.primaryNode.url.host
+    });
+    // use the capabilityInvocation key
+    const key = methodFor({purpose: 'capabilityInvocation'});
   }
 }
 

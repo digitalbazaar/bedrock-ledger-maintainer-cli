@@ -80,6 +80,32 @@ async function getNodeData({node, httpsAgent}) {
   };
 }
 
+async function signOperation({
+  operation,
+  key,
+  didMethod
+}) {
+  switch(didMethod.toLowerCase()) {
+    case 'v1': {
+      operation.proof = deepClone(acceleratorProof);
+      return v1.attachInvocationProof({
+        operation,
+        capability: `urn:zcap:root:${encodeURIComponent(this.witnessPoolId)}`,
+        capabilityAction: 'write',
+        invocationTarget: this.witnessPoolId,
+        key,
+        signer: key.signer()
+      });
+    }
+    case 'key': {
+
+    }
+    default: {
+
+    }
+  }
+}
+
 function deepClone(json) {
   return JSON.parse(JSON.stringify(json));
 }
@@ -105,7 +131,6 @@ async function getKey({
     case 'v1': {
       return _createV1Key({
         maintainerKey,
-        didMethod,
         veresMode,
         httpsAgent,
         hostname
@@ -139,7 +164,6 @@ async function _createV1Key({maintainerKey, veresMode, httpsAgent, hostname}) {
   const keyOps = require(maintainerKey);
   const invokeKey = new Ed25519VerificationKey2020(keyOps);
   return veresDriver.generate({invokeKey});
-
 }
 
 async function _createDIDKey({maintainerKey}) {
@@ -156,5 +180,6 @@ module.exports = {
   toUrl,
   parseNodes,
   getNodeData,
-  getKey
+  getKey,
+  signOperation
 };
