@@ -28,7 +28,8 @@ function _setupCLIOptions() {
       default: ''
     }).option('maintainerKey', {
       alias: 'k',
-      describe: 'A maintainer file containing material for a did key',
+      describe: 'A maintainer secret or a file containing ' +
+        'material for a v1 key',
       default: null
     }).option('keepAlive', {
       alias: 'a',
