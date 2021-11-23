@@ -81,7 +81,7 @@ class App {
     return faults * 3 + 1;
   }
   // calculates the minimum number of primary nodes required
-  // to support a certain number of daults in consensus
+  // to support a certain number of faults in consensus
   minPrimaryNodes(faults) {
     return faults * 2 + 2;
   }
@@ -92,6 +92,19 @@ class App {
       primary: await parseNodes(primary, httpsAgent),
       secondary: await parseNodes(secondary, httpsAgent)
     };
+  }
+  // is there an existing genesis pool doc?
+  async findWitnessPoolDoc() {
+    try {
+      const result = await this.primaryLedgerClient.getRecord(
+        {id: this.witnessPoolId});
+      return result;
+    } catch(e) {
+      if(e.name === 'NotFoundError') {
+        return {found: false};
+      }
+      throw e;
+    }
   }
   async signAndSendOperation({operation, key, didMethod}) {
     console.log('sending operation', JSON.stringify(operation, null, 2));
@@ -113,7 +126,6 @@ class App {
     return {nodes: this.nodes, meta, found};
   }
   async create() {
-    await this.setup();
     const {httpsAgent, maintainerKey, veresMode, didMethod} = this;
     // get the maintainer key or generate a new one
     const {didDocument, methodFor} = await getKey({
@@ -129,7 +141,6 @@ class App {
     await this.signAndSendOperation({operation, key, didMethod});
   }
   async update() {
-    await this.setup();
     const {httpsAgent, maintainerKey, veresMode, didMethod} = this;
     // get the maintainer key or generate a new one
     const {didDocument, methodFor} = await getKey({
