@@ -5,6 +5,7 @@
 
 const https = require('https');
 const {parseNodes, getKey, signOperation} = require('./helpers');
+const {createWitnessPoolDoc, updateWitnessPoolDoc} = require('./operations');
 
 /**
  * The MaintainerApp glues all the various services into a single App.
@@ -126,7 +127,13 @@ class App {
     return {nodes: this.nodes, meta, found};
   }
   async create() {
-    const {httpsAgent, maintainerKey, veresMode, didMethod} = this;
+    const {
+      httpsAgent,
+      maintainerKey,
+      veresMode,
+      didMethod,
+      maximumWitnessCount
+    } = this;
     // get the maintainer key or generate a new one
     const {didDocument, methodFor} = await getKey({
       maintainerKey,
@@ -134,6 +141,11 @@ class App {
       didMethod,
       veresMode,
       hostname: this.primaryNode.url.host
+    });
+    const operation = createWitnessPoolDoc({
+      didDocument,
+      nodes: this.nodes,
+      maximumWitnessCount
     });
     // use the capabilityInvocation key
     const key = methodFor({purpose: 'capabilityInvocation'});
@@ -141,7 +153,13 @@ class App {
     await this.signAndSendOperation({operation, key, didMethod});
   }
   async update() {
-    const {httpsAgent, maintainerKey, veresMode, didMethod} = this;
+    const {
+      httpsAgent,
+      maintainerKey,
+      veresMode,
+      didMethod,
+      maximumWitnessCount
+    } = this;
     // get the maintainer key or generate a new one
     const {didDocument, methodFor} = await getKey({
       maintainerKey,
@@ -150,8 +168,16 @@ class App {
       veresMode,
       hostname: this.primaryNode.url.host
     });
+    const operation = updateWitnessPoolDoc({
+      didDocument,
+      existingWitnessPool,
+      nodes: this.nodes,
+      maximumWitnessCount
+    });
     // use the capabilityInvocation key
     const key = methodFor({purpose: 'capabilityInvocation'});
+    // sign the operation and send it to the ledger
+    await this.signAndSendOperation({operation, key, didMethod});
   }
 }
 
