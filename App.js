@@ -147,7 +147,7 @@ class App {
       hostname: this.primaryNode.url.host
     });
     const operation = createWitnessPoolDoc({
-      witnessPoolId,
+      witnessPoolId: this.witnessPoolId,
       didDocument,
       nodes: this.nodes,
       maximumWitnessCount
@@ -157,7 +157,7 @@ class App {
     // sign the operation and send it to the ledger
     await this.signAndSendOperation({operation, key, didMethod});
   }
-  async update() {
+  async update({existingWitnessPool}) {
     const {
       httpsAgent,
       maintainerKey,

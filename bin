@@ -70,20 +70,20 @@ yargs.scriptName('vom')
   .command('update', 'update ledger nodes', async ({argv}) => {
     const app = new App(argv);
     await app.setup();
-    const {found} = await app.findWitnessPoolDoc();
+    const {found, record} = await app.findWitnessPoolDoc();
     if(!found) {
       throw new Error('Existing Witness Pool Document Not Found.');
     }
-    return app.update();
+    return app.update({existingWitnessPool: record});
   })
   .command('send', 'creates or updates a witness pool doc', async ({argv}) => {
     const app = new App(argv);
     await app.setup();
-    const {found} = await app.findWitnessPoolDoc();
+    const {found, record} = await app.findWitnessPoolDoc();
     if(!found) {
       return app.create();
     }
-    return app.update();
+    return app.update({existingWitnessPool: record});
   })
   .help()
   .argv;
