@@ -80,32 +80,6 @@ async function getNodeData({node, httpsAgent}) {
   };
 }
 
-async function signOperation({
-  operation,
-  key,
-  didMethod
-}) {
-  switch(didMethod.toLowerCase()) {
-    case 'v1': {
-      operation.proof = deepClone(acceleratorProof);
-      return v1.attachInvocationProof({
-        operation,
-        capability: `urn:zcap:root:${encodeURIComponent(this.witnessPoolId)}`,
-        capabilityAction: 'write',
-        invocationTarget: this.witnessPoolId,
-        key,
-        signer: key.signer()
-      });
-    }
-    case 'key': {
-
-    }
-    default: {
-
-    }
-  }
-}
-
 function deepClone(json) {
   return JSON.parse(JSON.stringify(json));
 }

@@ -4,8 +4,12 @@
 */
 
 const https = require('https');
-const {parseNodes, getKey, signOperation} = require('./helpers');
-const {createWitnessPoolDoc, updateWitnessPoolDoc} = require('./operations');
+const {parseNodes, getKey} = require('./helpers');
+const {
+  createWitnessPoolDoc,
+  updateWitnessPoolDoc,
+  signOperation
+} = require('./operations');
 
 /**
  * The MaintainerApp glues all the various services into a single App.
@@ -143,6 +147,7 @@ class App {
       hostname: this.primaryNode.url.host
     });
     const operation = createWitnessPoolDoc({
+      witnessPoolId,
       didDocument,
       nodes: this.nodes,
       maximumWitnessCount
