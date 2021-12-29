@@ -1,3 +1,9 @@
+/**
+ *
+ *  Copyright (c) 2021 Digital Bazaar, Inc. All rights reserved.
+*/
+
+const jsonpatch = require('fast-json-patch');
 const jsigs = require('jsonld-signatures');
 const v1 = require('did-veres-one');
 const {Ed25519Signature2020} = require('@digitalbazaar/ed25519-signature-2020');
@@ -57,7 +63,15 @@ api.updateWitnessPoolDoc = async ({
   witnessPoolId,
   contexts = veresOneContexts
 }) => {
-  const patch = [];
+  const observer = jsonpatch.observe(existingWitnessPool);
+  if(Number.isInteger(maximumWitnessCount)) {
+    existingWitnessPool.maximumWitnessCount = maximumWitnessCount;
+  }
+  existingWitnessPool.primaryWitnessCandidate =
+    nodes.primary.map(p => p.targetNode);
+  existingWitnessPool.secondaryWitnessCandidate =
+    nodes.secondary.map(s => s.targetNode);
+  const patch = jsonpatch.generate(observer);
   return {
     '@context': [contexts.JSON_LD_PATCH_CONTEXT_V1_URL, {
       value: {

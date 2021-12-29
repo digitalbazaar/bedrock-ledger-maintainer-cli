@@ -39,6 +39,7 @@
     "chalk": "^4.1.2",
     "did-veres-one": "github:veres-one/did-veres-one#v14.x",
     "ed25519-signature-2020-context": "^1.1.0",
+    "fast-json-patch": "^3.1.0",
     "json-ld-patch-context": "^4.0.0",
     "jsonld-document-loader": "^1.2.0",
     "jsonld-signatures": "^9.3.1",
