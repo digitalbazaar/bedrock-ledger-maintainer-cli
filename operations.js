@@ -9,7 +9,7 @@ const v1 = require('did-veres-one');
 const {Ed25519Signature2020} = require('@digitalbazaar/ed25519-signature-2020');
 const {CapabilityInvocation} = require('@digitalbazaar/zcapld');
 const contexts = require('./contexts');
-const documentLoader = require('./documentLoader');
+const jdl = require('./documentLoader');
 const {deepClone} = require('./helpers');
 
 const api = {};
@@ -108,7 +108,7 @@ api.signOperation = async ({
       //  FIXME does this need a ledgerWriteProof in addition to the
       //  document write proof?
       return jsigs.sign(operation, {
-        documentLoader,
+        documentLoader: jdl.build(),
         suite: new Ed25519Signature2020({key}),
         purpose: new CapabilityInvocation({
           capability: `urn:zcap:root:${encodeURIComponent(witnessPoolId)}`,
