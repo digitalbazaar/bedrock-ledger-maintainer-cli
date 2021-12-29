@@ -154,6 +154,5 @@ module.exports = {
   toUrl,
   parseNodes,
   getNodeData,
-  getKey,
-  signOperation
+  getKey
 };
