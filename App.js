@@ -112,7 +112,7 @@ class App {
     }
   }
   async signAndSendOperation({operation, key, didMethod}) {
-    console.log('sending operation', JSON.stringify(operation, null, 2));
+    console.log('sending operation', JSON.stringify({operation}, null, 2));
     console.log(JSON.stringify({
       primaryNodes: this.primaryWitnessCandidate,
       secondaryNodes: this.secondaryWitnessCandidate,

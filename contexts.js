@@ -36,7 +36,7 @@ jdl.addStatic(
 );
 
 // export the constants for use in records & operations
-const constants = {
+const contexts = {
   ED25519_2020_CONTEXT_V1_URL: ed25519Ctx.constants.CONTEXT_URL,
   WEB_LEDGER_CONTEXT_V1_URL: webLedgerCtx.constants.WEB_LEDGER_CONTEXT_V1_URL,
   JSON_LD_PATCH_CONTEXT_V1_URL:
@@ -46,4 +46,4 @@ const constants = {
   ZCAP_CONTEXT_V1_URL: zcapCtx.constants.CONTEXT_URL
 };
 
-module.exports = {constants};
+module.exports = contexts;
