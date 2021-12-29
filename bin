@@ -30,7 +30,7 @@ function _setupCLIOptions() {
       alias: 'k',
       describe: 'A maintainer secret or a file containing ' +
         'material for a v1 key',
-      default: null
+      default: 'password'
     }).option('keepAlive', {
       alias: 'a',
       describe: 'Whether to keep the httpsAgent agent alive',

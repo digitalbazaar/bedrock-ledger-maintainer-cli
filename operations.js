@@ -39,7 +39,7 @@ const veresOneContexts = [
   contexts.ED25519_2020_CONTEXT_V1_URL
 ];
 
-api.createWitnessPoolDoc = async ({
+api.createWitnessPoolDoc = ({
   didDocument,
   nodes,
   witnessPoolId,
@@ -55,7 +55,7 @@ api.createWitnessPoolDoc = async ({
   secondaryWitnessCandidate: nodes.secondary.map(s => s.targetNode)
 });
 
-api.updateWitnessPoolDoc = async ({
+api.updateWitnessPoolDoc = ({
   existingWitnessPool,
   nodes,
   maximumWitnessCount,

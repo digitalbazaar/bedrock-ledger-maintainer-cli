@@ -111,7 +111,7 @@ class App {
       throw e;
     }
   }
-  async signAndSendOperation({operation, key, didMethod}) {
+  async signAndSendOperation({operation, key, didMethod, witnessPoolId}) {
     console.log('sending operation', JSON.stringify({operation}, null, 2));
     console.log(JSON.stringify({
       primaryNodes: this.primaryWitnessCandidate,
@@ -119,8 +119,26 @@ class App {
       totalNodes: this.totalNodeCount,
       maxFaults: this.maxFaults
     }, null, 2));
-    const signed = await signOperation({operation, key, didMethod});
+    const signed = await signOperation({
+      operation,
+      key,
+      didMethod,
+      witnessPoolId
+    });
     await this.primaryLedgerClient.sendOperation({operation: signed});
+  }
+  // tells main whether there is an existing genesis pool doc or not.
+  async findGenesisPool() {
+    try {
+      const result = await this.primaryLedgerClient.getRecord(
+        {id: this.witnessPoolId});
+      return result;
+    } catch(e) {
+      if(e.name === 'NotFoundError') {
+        return {found: false};
+      }
+      throw e;
+    }
   }
   // fetches all the ledger node and config information from all nodes
   async setup() {
@@ -136,7 +154,8 @@ class App {
       maintainerKey,
       veresMode,
       didMethod,
-      maximumWitnessCount
+      maximumWitnessCount,
+      witnessPoolId
     } = this;
     // get the maintainer key or generate a new one
     const {didDocument, methodFor} = await getKey({
@@ -147,7 +166,7 @@ class App {
       hostname: this.primaryNode.url.host
     });
     const operation = createWitnessPoolDoc({
-      witnessPoolId: this.witnessPoolId,
+      witnessPoolId,
       didDocument,
       nodes: this.nodes,
       maximumWitnessCount
@@ -155,7 +174,7 @@ class App {
     // use the capabilityInvocation key
     const key = methodFor({purpose: 'capabilityInvocation'});
     // sign the operation and send it to the ledger
-    await this.signAndSendOperation({operation, key, didMethod});
+    await this.signAndSendOperation({operation, key, didMethod, witnessPoolId});
   }
   async update({existingWitnessPool}) {
     const {
@@ -163,7 +182,8 @@ class App {
       maintainerKey,
       veresMode,
       didMethod,
-      maximumWitnessCount
+      maximumWitnessCount,
+      witnessPoolId
     } = this;
     // get the maintainer key or generate a new one
     const {didDocument, methodFor} = await getKey({
@@ -182,7 +202,7 @@ class App {
     // use the capabilityInvocation key
     const key = methodFor({purpose: 'capabilityInvocation'});
     // sign the operation and send it to the ledger
-    await this.signAndSendOperation({operation, key, didMethod});
+    await this.signAndSendOperation({operation, key, didMethod, witnessPoolId});
   }
 }
 
