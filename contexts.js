@@ -47,12 +47,6 @@ const contexts = {
   ZCAP_CONTEXT_V1_URL: zcapCtx.constants.CONTEXT_URL
 };
 
-const didDocumentContexts = [
-  contexts.DID_CONTEXT_URL,
-  contexts.WEB_LEDGER_CONTEXT_V1_URL,
-  contexts.ED25519_2020_CONTEXT_V1_URL
-];
-
 const v1DidDocumentContexts = [
   contexts.DID_CONTEXT_URL,
   contexts.VERES_ONE_CONTEXT_V1_URL,
@@ -60,16 +54,25 @@ const v1DidDocumentContexts = [
   contexts.ED25519_2020_CONTEXT_V1_URL
 ];
 
-const ledgerOperationContexts = [
-  contexts.WEB_LEDGER_CONTEXT_V1_URL,
-  contexts.ZCAP_CONTEXT_V1_URL,
-  contexts.ED25519_2020_CONTEXT_V1_URL
-];
+const getRecordContexts = (didMethod = '') => {
+  switch(didMethod.toLowerCase()) {
+    case 'v1': {
+      return v1DidDocumentContexts;
+    }
+    // did key records shouldn't contain the veres-one context
+    case 'key': {
+      return v1DidDocumentContexts.filter(
+        c => c !== contexts.VERES_ONE_CONTEXT_V1_URL);
+    }
+    default: {
+      throw new Error(
+        `parameter "didMethod" must be "v1" or "key" received "${didMethod}"`);
+    }
+  }
+};
 
 module.exports = {
   contexts,
   contextMap,
-  didDocumentContexts,
-  v1DidDocumentContexts,
-  ledgerOperationContexts
+  getRecordContexts
 };

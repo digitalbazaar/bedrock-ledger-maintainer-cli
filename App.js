@@ -160,7 +160,8 @@ class App {
       witnessPoolId,
       didDocument,
       nodes: this.nodes,
-      maximumWitnessCount
+      maximumWitnessCount,
+      didMethod
     });
     const operation = await this.primaryLedgerClient.wrap({
       record,
@@ -182,7 +183,7 @@ class App {
       witnessPoolId
     } = this;
     // get the maintainer key or generate a new one
-    const {didDocument, methodFor} = await getKey({
+    const {methodFor} = await getKey({
       maintainerKey,
       httpsAgent,
       didMethod,
@@ -191,11 +192,11 @@ class App {
     });
     const {sequence = 0} = meta || {};
     const record = updateWitnessPoolDoc({
-      didDocument,
       existingWitnessPool,
       nodes: this.nodes,
       maximumWitnessCount,
-      sequence
+      sequence,
+      didMethod
     });
     const operation = await this.primaryLedgerClient.wrap({
       record,

@@ -8,7 +8,7 @@ const jsigs = require('jsonld-signatures');
 const v1 = require('did-veres-one');
 const {Ed25519Signature2020} = require('@digitalbazaar/ed25519-signature-2020');
 const {CapabilityInvocation} = require('@digitalbazaar/zcapld');
-const {contexts} = require('./contexts');
+const {contexts, getRecordContexts} = require('./contexts');
 const documentLoader = require('./documentLoader');
 const {deepClone} = require('./helpers');
 
@@ -32,21 +32,14 @@ const ledgerWriteProof = {
     'P8T2CezuFY#z279tKmToKKMjQ8tsCgTbBBthw5xEzHWL6GCqZyQnzZr7wUo'
 };
 
-const veresOneContexts = [
-  contexts.DID_CONTEXT_URL,
-  contexts.VERES_ONE_CONTEXT_V1_URL,
-  contexts.WEB_LEDGER_CONTEXT_V1_URL,
-  contexts.ED25519_2020_CONTEXT_V1_URL
-];
-
 api.createWitnessPoolDoc = ({
   didDocument,
   nodes,
   witnessPoolId,
   maximumWitnessCount,
-  contexts = veresOneContexts
+  didMethod
 }) => ({
-  '@context': contexts,
+  '@context': getRecordContexts(didMethod),
   id: witnessPoolId,
   type: 'WitnessPool',
   controller: didDocument.id,
@@ -60,7 +53,7 @@ api.updateWitnessPoolDoc = ({
   nodes,
   maximumWitnessCount,
   sequence,
-  contexts = veresOneContexts
+  didMethod
 }) => {
   const observer = jsonpatch.observe(existingWitnessPool);
   if(Number.isInteger(maximumWitnessCount)) {
@@ -75,7 +68,7 @@ api.updateWitnessPoolDoc = ({
     '@context': [contexts.JSON_LD_PATCH_CONTEXT_V1_URL, {
       value: {
         '@id': 'jldp:value',
-        '@context': contexts
+        '@context': getRecordContexts(didMethod)
       }
     }],
     target: existingWitnessPool.id,
