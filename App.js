@@ -170,6 +170,7 @@ class App {
     const key = methodFor({purpose: 'capabilityInvocation'});
     // sign the operation and send it to the ledger
     await this.signAndSendOperation({operation, key, didMethod, witnessPoolId});
+    console.log('witness pool created', {witnessPoolId});
   }
   async update({existingWitnessPool}) {
     const {
@@ -202,6 +203,7 @@ class App {
     const key = methodFor({purpose: 'capabilityInvocation'});
     // sign the operation and send it to the ledger
     await this.signAndSendOperation({operation, key, didMethod, witnessPoolId});
+    console.log('witness pool updated', {witnessPoolId});
   }
 }
 
