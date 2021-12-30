@@ -156,11 +156,15 @@ class App {
       veresMode,
       hostname: this.primaryNode.url.host
     });
-    const operation = createWitnessPoolDoc({
+    const record = createWitnessPoolDoc({
       witnessPoolId,
       didDocument,
       nodes: this.nodes,
       maximumWitnessCount
+    });
+    const operation = await this.primaryLedgerClient.wrap({
+      record,
+      operationType: 'create'
     });
     // use the capabilityInvocation key
     const key = methodFor({purpose: 'capabilityInvocation'});
@@ -184,11 +188,15 @@ class App {
       veresMode,
       hostname: this.primaryNode.url.host
     });
-    const operation = updateWitnessPoolDoc({
+    const record = updateWitnessPoolDoc({
       didDocument,
       existingWitnessPool,
       nodes: this.nodes,
       maximumWitnessCount
+    });
+    const operation = await this.primaryLedgerClient.wrap({
+      record,
+      operationType: 'update'
     });
     // use the capabilityInvocation key
     const key = methodFor({purpose: 'capabilityInvocation'});
