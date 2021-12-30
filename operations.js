@@ -60,7 +60,6 @@ api.updateWitnessPoolDoc = ({
   nodes,
   maximumWitnessCount,
   sequence,
-  witnessPoolId,
   contexts = veresOneContexts
 }) => {
   const observer = jsonpatch.observe(existingWitnessPool);
@@ -79,7 +78,7 @@ api.updateWitnessPoolDoc = ({
         '@context': contexts
       }
     }],
-    target: witnessPoolId,
+    target: existingWitnessPool.id,
     sequence,
     patch
   };

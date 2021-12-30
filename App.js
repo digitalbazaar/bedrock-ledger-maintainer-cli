@@ -172,7 +172,7 @@ class App {
     await this.signAndSendOperation({operation, key, didMethod, witnessPoolId});
     console.log('witness pool created', {witnessPoolId});
   }
-  async update({existingWitnessPool}) {
+  async update({existingWitnessPool, meta}) {
     const {
       httpsAgent,
       maintainerKey,
@@ -189,11 +189,13 @@ class App {
       veresMode,
       hostname: this.primaryNode.url.host
     });
+    const {sequence = 0} = meta || {};
     const record = updateWitnessPoolDoc({
       didDocument,
       existingWitnessPool,
       nodes: this.nodes,
-      maximumWitnessCount
+      maximumWitnessCount,
+      sequence
     });
     const operation = await this.primaryLedgerClient.wrap({
       record,
