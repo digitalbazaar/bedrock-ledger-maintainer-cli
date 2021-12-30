@@ -43,18 +43,9 @@ class App {
     });
     this.maximumWitnessCount = Number.parseInt(maximumWitnessCount);
   }
-  // formats the nodes into did keys for the witness pool doc.
-  get primaryWitnessCandidate() {
-    return this.nodes.primary.map(p => p.targetNode);
-  }
-  // formats the nodes into did keys for the witness pool doc.
-  get secondaryWitnessCandidate() {
-    return this.nodes.secondary.map(s => s.targetNode);
-  }
   // adds the primary and secondary witnesses together.
   get totalNodeCount() {
-    return this.primaryWitnessCandidate.length +
-      this.secondaryWitnessCandidate.length;
+    return this.nodes.primary.length + this.nodes.secondary.length;
   }
   // the max number of faults is the (total nodes - 1) / 3
   // this is derived from 3f + 1 = minimum # of nodes for faults
@@ -114,8 +105,8 @@ class App {
   async signAndSendOperation({operation, key, didMethod, witnessPoolId}) {
     console.log('sending operation', JSON.stringify({operation}, null, 2));
     console.log(JSON.stringify({
-      primaryNodes: this.primaryWitnessCandidate,
-      secondaryNodes: this.secondaryWitnessCandidate,
+      primaryNodes: this.nodes.primary,
+      secondaryNodes: this.nodes.secondary,
       totalNodes: this.totalNodeCount,
       maxFaults: this.maxFaults
     }, null, 2));

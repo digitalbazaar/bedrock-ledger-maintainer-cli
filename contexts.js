@@ -9,27 +9,28 @@ const jsonldPatchCtx = require('json-ld-patch-context');
 const veresOneCtx = require('veres-one-context');
 const didCtx = require('@digitalcredentials/did-context');
 const zcapCtx = require('zcap-context');
-const jdl = require('./documentLoader');
+
+const contextMap = new Map();
 
 // add contexts to the documentLoader
-jdl.addStatic(zcapCtx.constants.CONTEXT_URL, zcapCtx.CONTEXT);
-jdl.addStatic(ed25519Ctx.constants.CONTEXT_URL, ed25519Ctx.CONTEXT);
-jdl.addStatic(
+contextMap.set(zcapCtx.constants.CONTEXT_URL, zcapCtx.CONTEXT);
+contextMap.set(ed25519Ctx.constants.CONTEXT_URL, ed25519Ctx.CONTEXT);
+contextMap.set(
   webLedgerCtx.constants.WEB_LEDGER_CONTEXT_V1_URL,
   webLedgerCtx.contexts.get(
     webLedgerCtx.constants.WEB_LEDGER_CONTEXT_V1_URL)
 );
-jdl.addStatic(
+contextMap.set(
   jsonldPatchCtx.constants.JSON_LD_PATCH_CONTEXT_V1_URL,
   jsonldPatchCtx.contexts.get(
     jsonldPatchCtx.constants.JSON_LD_PATCH_CONTEXT_V1_URL)
 );
-jdl.addStatic(
+contextMap.set(
   veresOneCtx.constants.VERES_ONE_CONTEXT_V1_URL,
   veresOneCtx.contexts.get(
     veresOneCtx.constants.VERES_ONE_CONTEXT_V1_URL)
 );
-jdl.addStatic(
+contextMap.set(
   didCtx.constants.DID_CONTEXT_URL,
   didCtx.contexts.get(
     didCtx.constants.DID_CONTEXT_URL)
@@ -46,4 +47,29 @@ const contexts = {
   ZCAP_CONTEXT_V1_URL: zcapCtx.constants.CONTEXT_URL
 };
 
-module.exports = contexts;
+const didDocumentContexts = [
+  contexts.DID_CONTEXT_URL,
+  contexts.WEB_LEDGER_CONTEXT_V1_URL,
+  contexts.ED25519_2020_CONTEXT_V1_URL
+];
+
+const v1DidDocumentContexts = [
+  contexts.DID_CONTEXT_URL,
+  contexts.VERES_ONE_CONTEXT_V1_URL,
+  contexts.WEB_LEDGER_CONTEXT_V1_URL,
+  contexts.ED25519_2020_CONTEXT_V1_URL
+];
+
+const ledgerOperationContexts = [
+  contexts.WEB_LEDGER_CONTEXT_V1_URL,
+  contexts.ZCAP_CONTEXT_V1_URL,
+  contexts.ED25519_2020_CONTEXT_V1_URL
+];
+
+module.exports = {
+  contexts,
+  contextMap,
+  didDocumentContexts,
+  v1DidDocumentContexts,
+  ledgerOperationContexts
+};
