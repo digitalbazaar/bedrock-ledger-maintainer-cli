@@ -65,7 +65,7 @@ api.updateWitnessPoolDoc = ({
     nodes.secondary.map(s => s.targetNode);
   const patch = jsonpatch.generate(observer);
   if(patch.length <= 0) {
-    throw new Error('Empty json Patch.' +
+    throw new Error('Empty json Patch. ' +
       'WebLedgerUpdates must contain changes.');
   }
   return {

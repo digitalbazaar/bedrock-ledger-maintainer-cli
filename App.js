@@ -103,7 +103,6 @@ class App {
     }
   }
   async signAndSendOperation({operation, key, didMethod, witnessPoolId}) {
-    console.log('sending operation', JSON.stringify({operation}, null, 2));
     console.log(JSON.stringify({
       primaryNodes: this.nodes.primary.map(
         ({url, targetNode}) => ({url, targetNode})),
@@ -118,6 +117,7 @@ class App {
       didMethod,
       witnessPoolId
     });
+    console.log('sending operation', JSON.stringify({signed}, null, 2));
     await this.primaryLedgerClient.sendOperation({operation: signed});
   }
   // tells main whether there is an existing genesis pool doc or not.
