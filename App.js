@@ -105,8 +105,10 @@ class App {
   async signAndSendOperation({operation, key, didMethod, witnessPoolId}) {
     console.log('sending operation', JSON.stringify({operation}, null, 2));
     console.log(JSON.stringify({
-      primaryNodes: this.nodes.primary,
-      secondaryNodes: this.nodes.secondary,
+      primaryNodes: this.nodes.primary.map(
+        ({url, targetNode}) => ({url, targetNode})),
+      secondaryNodes: this.nodes.secondary.map(
+        ({url, targetNode}) => ({url, targetNode})),
       totalNodes: this.totalNodeCount,
       maxFaults: this.maxFaults
     }, null, 2));

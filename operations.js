@@ -64,6 +64,10 @@ api.updateWitnessPoolDoc = ({
   existingWitnessPool.secondaryWitnessCandidate =
     nodes.secondary.map(s => s.targetNode);
   const patch = jsonpatch.generate(observer);
+  if(patch.length <= 0) {
+    throw new Error('Empty json Patch.' +
+      'WebLedgerUpdates must contain changes.');
+  }
   return {
     '@context': [contexts.JSON_LD_PATCH_CONTEXT_V1_URL, {
       value: {
