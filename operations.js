@@ -13,19 +13,27 @@ const documentLoader = require('./documentLoader');
 
 const api = {};
 
-//FIXME this will need to signed with a key delegated from the maintainer
-const ledgerWriteProof = ledgerId => ({
-  type: 'Ed25519Signature2020',
-  created: '2021-01-10T23:10:25Z',
-  capability: `urn:zcap:root:${encodeURIComponent(ledgerId)}`,
-  capabilityAction: 'write',
-  invocationTarget: `${ledgerId}/records`,
-  proofPurpose: 'capabilityInvocation',
-  proofValue: 'z3t9it5yhFHkqWnHKMQ2DWVj7aHDN37f95UzhQYQGYd9LyTSGzufCiTwDWN' +
-    'fCdxQA9ZHcTTVAhHwoAji2AJnk2E6',
-  verificationMethod: 'did:v1:test:nym:z279yHL6HsxRzCPU78DAWgZVieb8xPK1mJKJBb' +
-    'P8T2CezuFY#z279tKmToKKMjQ8tsCgTbBBthw5xEzHWL6GCqZyQnzZr7wUo'
-});
+/**
+ * Adds a leger invocation proof allowing you to write to the ledger.
+ *
+ * @param {object} options - Options to use.
+ * @param {string} options.ledgerId - The ledger id.
+ * @param {object} options.key - A key to signed with.
+ * @param {object} options.operation - A Web ledger operation.
+ *
+ * @returns {Promise<object>} The signed operation.
+ */
+const addLedgerInvocationProof = ({ledgerId, key, operation}) => {
+  return jsigs.sign(operation, {
+    documentLoader,
+    suite: new Ed25519Signature2020({key}),
+    purpose: new CapabilityInvocation({
+      capability: `urn:zcap:root:${encodeURIComponent(ledgerId)}`,
+      capabilityAction: 'write',
+      invocationTarget: `${ledgerId}/records`,
+    })
+  });
+};
 
 api.createWitnessPoolDoc = ({
   didDocument,
@@ -83,11 +91,15 @@ api.signOperation = async ({
   witnessPoolId,
   ledgerId
 }) => {
+  const opWithLedgerProof = await addLedgerInvocationProof({
+    operation,
+    key,
+    ledgerId
+  });
   switch(didMethod.toLowerCase()) {
     case 'v1': {
-      operation.proof = ledgerWriteProof(ledgerId);
       return v1.attachInvocationProof({
-        operation,
+        operation: opWithLedgerProof,
         capability: `urn:zcap:root:${encodeURIComponent(witnessPoolId)}`,
         capabilityAction: 'write',
         invocationTarget: witnessPoolId,
@@ -96,10 +108,7 @@ api.signOperation = async ({
       });
     }
     case 'key': {
-      //  FIXME should all ledgers use the same permission pattern as veres-one?
-      //  FIXME does this need a ledgerWriteProof in addition to the
-      //  document write proof?
-      return jsigs.sign(operation, {
+      return jsigs.sign(opWithLedgerProof, {
         documentLoader,
         suite: new Ed25519Signature2020({key}),
         purpose: new CapabilityInvocation({
