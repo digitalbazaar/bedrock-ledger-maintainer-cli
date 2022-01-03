@@ -1,0 +1,57 @@
+{
+  "name": "bedrock-ledger-maintainer-cli",
+  "version": "0.0.1",
+  "description": "A CLI for updating witnessPool documents on bedrock ledgers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "bedrock-ledger-maintainer-cli": "./bin"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/digitalbazaar/bedrock-ledger-maintainer-cli.git"
+  },
+  "keywords": [
+    "CLI",
+    "Blockchain",
+    "VerifiableCredentials",
+    "Decentralized",
+    "Identifiers",
+    "Consensus",
+    "Algorithms",
+    "Bedrock"
+  ],
+  "author": {
+    "name": "Digital Bazaar, Inc.",
+    "email": "support@digitalbazaar.com",
+    "url": "http://digitalbazaar.com"
+  },
+  "bugs": {
+    "url": "https://github.com/digitalbazaar/bedrock-ledger-maintainer-cli/issues"
+  },
+  "homepage": "https://github.com/digitalbazaar/bedrock-ledger-maintainer-cli#readme",
+  "dependencies": {
+    "@digitalbazaar/did-method-key": "^2.0.0",
+    "@digitalbazaar/ed25519-signature-2020": "^3.0.0",
+    "@digitalbazaar/zcapld": "^5.2.0",
+    "@digitalcredentials/did-context": "^1.0.0",
+    "chalk": "^4.1.2",
+    "did-veres-one": "github:veres-one/did-veres-one#v14.x",
+    "ed25519-signature-2020-context": "^1.1.0",
+    "fast-json-patch": "^3.1.0",
+    "json-ld-patch-context": "^4.0.0",
+    "jsonld-document-loader": "^1.2.0",
+    "jsonld-signatures": "^9.3.1",
+    "veres-one-context": "^12.0.0",
+    "web-ledger-client": "^5.0.0",
+    "web-ledger-context": "^12.0.0",
+    "yargs": "^17.2.1",
+    "zcap-context": "^1.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.2.0",
+    "eslint-config-digitalbazaar": "^2.8.0"
+  }
+}
