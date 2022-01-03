@@ -12,7 +12,7 @@ const zcapCtx = require('zcap-context');
 
 const contextMap = new Map();
 
-// add contexts to the documentLoader
+// add contexts for the documentLoader
 contextMap.set(zcapCtx.constants.CONTEXT_URL, zcapCtx.CONTEXT);
 contextMap.set(ed25519Ctx.constants.CONTEXT_URL, ed25519Ctx.CONTEXT);
 contextMap.set(
@@ -59,7 +59,7 @@ const getRecordContexts = (didMethod = '') => {
     case 'v1': {
       return v1DidDocumentContexts;
     }
-    // did key records shouldn't contain the veres-one context
+    // records signed with generic did keys don't need the veres-one context
     case 'key': {
       return v1DidDocumentContexts.filter(
         c => c !== contexts.VERES_ONE_CONTEXT_V1_URL);

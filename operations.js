@@ -14,7 +14,7 @@ const documentLoader = require('./documentLoader');
 const api = {};
 
 /**
- * Adds a leger invocation proof allowing you to write to the ledger.
+ * Adds a ledger invocation proof allowing you to write to the ledger.
  *
  * @param {object} options - Options to use.
  * @param {string} options.ledgerId - The ledger id.
@@ -68,7 +68,7 @@ api.updateWitnessPoolDoc = ({
     nodes.secondary.map(s => s.targetNode);
   const patch = jsonpatch.generate(observer);
   if(patch.length <= 0) {
-    throw new Error('Empty json Patch. ' +
+    throw new Error('Empty json patch. ' +
       'WebLedgerUpdates must contain changes.');
   }
   return {
