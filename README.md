@@ -93,9 +93,9 @@ For a `veres-one` ledger node:
 Bedrock blockchains have the following rules for faults in consensus.
 
 ```js
-// for each fault we need 3 times the fault plus one nodes
+// for each fault we need 3 times the fault plus one node.
 const minNodes = faults => 3 * faults + 1
-// for each fault we need 2 times the fault primary nodes + 2
+// for each fault we need 2 times the fault in primary nodes + 2 primary nodes.
 const minPrimaryNodes = faults => 2 * faults + 2;
 
 const oneFault = minNodes(1);

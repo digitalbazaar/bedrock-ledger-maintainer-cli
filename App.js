@@ -67,9 +67,19 @@ class App {
     const {genesisBlock: {event: [config]}} = this.primaryNode;
     const {ledgerConfiguration: {witnessSelectionMethod}} = config;
     if(!witnessSelectionMethod) {
-      throw new Error('Expected Genesis node to have a witnessSelectionMethod');
+      throw new Error(
+        'Expected Genesis Block to have a witnessSelectionMethod.');
     }
     return witnessSelectionMethod.witnessPool;
+  }
+  get ledgerId() {
+    const {genesisBlock: {event: [config]}} = this.primaryNode;
+    const {ledgerConfiguration: {ledger}} = config;
+    if(!ledger) {
+      throw new Error('Expected Genesis Block to have a ledger id.');
+    }
+    return ledger;
+
   }
   // calculates the minimum number of nodes required
   // to support a certain number of faults in consensus
@@ -102,7 +112,13 @@ class App {
       throw e;
     }
   }
-  async signAndSendOperation({operation, key, didMethod, witnessPoolId}) {
+  async signAndSendOperation({
+    operation,
+    key,
+    didMethod,
+    witnessPoolId,
+    ledgerId
+  }) {
     console.log(JSON.stringify({
       primaryNodes: this.nodes.primary.map(
         ({url, targetNode}) => ({url, targetNode})),
@@ -115,7 +131,8 @@ class App {
       operation,
       key,
       didMethod,
-      witnessPoolId
+      witnessPoolId,
+      ledgerId
     });
     console.log('sending operation', JSON.stringify({signed}, null, 2));
     await this.primaryLedgerClient.sendOperation({operation: signed});
@@ -148,7 +165,8 @@ class App {
       veresMode,
       didMethod,
       maximumWitnessCount,
-      witnessPoolId
+      witnessPoolId,
+      ledgerId
     } = this;
     // get the maintainer key or generate a new one
     const {didDocument, methodFor} = await getKey({
@@ -172,7 +190,13 @@ class App {
     // use the capabilityInvocation key
     const key = methodFor({purpose: 'capabilityInvocation'});
     // sign the operation and send it to the ledger
-    await this.signAndSendOperation({operation, key, didMethod, witnessPoolId});
+    await this.signAndSendOperation({
+      operation,
+      key,
+      didMethod,
+      witnessPoolId,
+      ledgerId
+    });
     console.log('witness pool created', {witnessPoolId});
   }
   async update({existingWitnessPool, meta}) {
@@ -182,7 +206,8 @@ class App {
       veresMode,
       didMethod,
       maximumWitnessCount,
-      witnessPoolId
+      witnessPoolId,
+      ledgerId
     } = this;
     // get the maintainer key or generate a new one
     const {methodFor} = await getKey({
@@ -207,7 +232,13 @@ class App {
     // use the capabilityInvocation key
     const key = methodFor({purpose: 'capabilityInvocation'});
     // sign the operation and send it to the ledger
-    await this.signAndSendOperation({operation, key, didMethod, witnessPoolId});
+    await this.signAndSendOperation({
+      operation,
+      key,
+      didMethod,
+      witnessPoolId,
+      ledgerId
+    });
     console.log('witness pool updated', {witnessPoolId});
   }
 }

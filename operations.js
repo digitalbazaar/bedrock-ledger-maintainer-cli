@@ -10,16 +10,11 @@ const {Ed25519Signature2020} = require('@digitalbazaar/ed25519-signature-2020');
 const {CapabilityInvocation} = require('@digitalbazaar/zcapld');
 const {contexts, getRecordContexts} = require('./contexts');
 const documentLoader = require('./documentLoader');
-const {deepClone} = require('./helpers');
 
 const api = {};
 
-//FIXME in the future we will need to get the ledgerId from the genesis block
-const ledgerId = 'did:v1:test:uuid:c37e914a-1e2a-4d59-9668-ee93458fd19a';
-
-//FIXME this will need to be constructed using the ledgerId
-//and signed with a key delegated from the maintainer
-const ledgerWriteProof = {
+//FIXME this will need to signed with a key delegated from the maintainer
+const ledgerWriteProof = ledgerId => ({
   type: 'Ed25519Signature2020',
   created: '2021-01-10T23:10:25Z',
   capability: `urn:zcap:root:${encodeURIComponent(ledgerId)}`,
@@ -30,7 +25,7 @@ const ledgerWriteProof = {
     'fCdxQA9ZHcTTVAhHwoAji2AJnk2E6',
   verificationMethod: 'did:v1:test:nym:z279yHL6HsxRzCPU78DAWgZVieb8xPK1mJKJBb' +
     'P8T2CezuFY#z279tKmToKKMjQ8tsCgTbBBthw5xEzHWL6GCqZyQnzZr7wUo'
-};
+});
 
 api.createWitnessPoolDoc = ({
   didDocument,
@@ -85,11 +80,12 @@ api.signOperation = async ({
   operation,
   key,
   didMethod = '',
-  witnessPoolId
+  witnessPoolId,
+  ledgerId
 }) => {
   switch(didMethod.toLowerCase()) {
     case 'v1': {
-      operation.proof = deepClone(ledgerWriteProof);
+      operation.proof = ledgerWriteProof(ledgerId);
       return v1.attachInvocationProof({
         operation,
         capability: `urn:zcap:root:${encodeURIComponent(witnessPoolId)}`,
