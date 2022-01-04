@@ -33,8 +33,7 @@ Options:
                                                                    [default: ""]
   -s, --secondary            A comma separated list of secondary nodes
                                                                    [default: ""]
-  -k, --maintainerKey        A maintainer secret or a file containing material
-                             for a v1 key                  [default: "password"]
+  -k, --maintainerKeyWord    A maintainer secret           [default: "password"]
   -a, --keepAlive            Whether to keep the httpsAgent agent alive
                                                                  [default: true]
   -r, --rejectUnauthorized   Whether to reject domains with invalid SSL
@@ -51,15 +50,15 @@ Options:
 
 This example is for a non-veres-one ledger that uses did keys.
 This example assumes you have 4 primary nodes.
-The maintainerKey secret is a just string used to recreate the maintainer key for the ledger.
+The maitainerKeyWord secret is a just string used to recreate the maintainer key for the ledger.
 This will create a witness pool with a fault tolerance of 1.
 ```
-./bin create --primary myNode1.com,myNode2.com,myNode3.com,myNode4.com --maximumWitnessCount 4 --didMethod key --maintainerKey maintainer-key-secret
+./bin create --primary myNode1.com,myNode2.com,myNode3.com,myNode4.com --maximumWitnessCount 4 --didMethod key --maintainerKeyWord maintainer-key-secret
 ```
 
 For a `veres-one` ledger node:
 ```
-./bin create --primary myNode1.com,myNode2.com,myNode3.com,myNode4.com --maximumWitnessCount 4 --didMethod v1 --maintainerKey path/to/maintainerKey.json
+./bin create --primary myNode1.com,myNode2.com,myNode3.com,myNode4.com --maximumWitnessCount 4 --didMethod v1 --maintainerKeyWord maintainer-key-secret
 ```
 ### Update a Witness Pool Record
 
@@ -71,7 +70,7 @@ Additionally, we now have 7 nodes, so we can safely have one secondary node.
 
 For a `veres-one` ledger node:
 ```
-./bin update -p myNode1.com,myNode2.com,myNode3.com,myNode4.com,myNode5.com,myNode6.com -s myNode7.com -w 6 -d v1 -k path/to/maintainerKey.json
+./bin update -p myNode1.com,myNode2.com,myNode3.com,myNode4.com,myNode5.com,myNode6.com -s myNode7.com -w 6 -d v1 -k maintainer-key-secret
 ```
 
 ### Send a Witness Pool Record
@@ -86,7 +85,7 @@ If a record already exists it will issue an update.
 
 For a `veres-one` ledger node:
 ```
-./bin send -p myNode1.com,myNode2.com,myNode3.com,myNode4.com,myNode7.com,myNode6.com -s myNode5.com -w 6 -d v1 -k path/to/maintainerKey.json
+./bin send -p myNode1.com,myNode2.com,myNode3.com,myNode4.com,myNode7.com,myNode6.com -s myNode5.com -w 6 -d v1 -k maintainer-key-secret
 ```
 
 ### Fault Tolerance
@@ -111,16 +110,3 @@ const twoFaultsPrimaryNodes = minPrimaryNodes(2);
 // so for two faults you need 7 nodes with 6 of those nodes being primary
 // the seventh node can be primary or secondary
 ```
-
-### Maintainer Key format
-Veres One ledgers require the maintainer key is a piece of json in this format:
-
-```js
-{
-  "type": "Ed25519VerificationKey2020",
-  "publicKeyMultibase": "zpublicKeyMultibase",
-  "privateKeyMultibase": "zprivateKeyMultibase"
-}
-```
-
-You can get this by [exporting an Ed25519VerificationKey2020 to a file](https://github.com/digitalbazaar/ed25519-verification-key-2020).

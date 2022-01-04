@@ -26,10 +26,9 @@ function _setupCLIOptions() {
       alias: 's',
       describe: 'A comma separated list of secondary nodes',
       default: ''
-    }).option('maintainerKey', {
+    }).option('maintainerKeyWord', {
       alias: 'k',
-      describe: 'A maintainer secret or a file containing ' +
-        'material for a v1 key',
+      describe: 'A maintainer secret',
       default: 'password'
     }).option('keepAlive', {
       alias: 'a',
