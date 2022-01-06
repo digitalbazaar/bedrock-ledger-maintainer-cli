@@ -3,7 +3,6 @@
  *  Copyright (c) 2021 Digital Bazaar, Inc. All rights reserved.
 */
 
-const crypto = require('crypto');
 const {WebLedgerClient} = require('web-ledger-client');
 const v1 = require('did-veres-one');
 const didKeyDriver = require('@digitalbazaar/did-method-key').driver();
@@ -99,6 +98,9 @@ async function getKey({
   httpsAgent,
   hostname
 }) {
+  if(typeof maintainerKeySeed !== 'string') {
+    throw new Error('Expected maintainerKeySeed to be a bs58 encoded string.');
+  }
   const seed = decodeSecretKeySeed({secretKeySeed: maintainerKeySeed});
   switch(didMethod.toLowerCase()) {
     case 'v1': {

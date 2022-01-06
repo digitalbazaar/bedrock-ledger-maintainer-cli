@@ -33,7 +33,7 @@ Options:
                                                                    [default: ""]
   -s, --secondary            A comma separated list of secondary nodes
                                                                    [default: ""]
-  -k, --maintainerKeyWord    A maintainer secret           [default: "password"]
+  -k, --maintainerKeySeed    A bs58 encoded maintainer key seed
   -a, --keepAlive            Whether to keep the httpsAgent agent alive
                                                                  [default: true]
   -r, --rejectUnauthorized   Whether to reject domains with invalid SSL
@@ -53,24 +53,24 @@ This example assumes you have 4 primary nodes.
 The maitainerKeyWord secret is a just string used to recreate the maintainer key for the ledger.
 This will create a witness pool with a fault tolerance of 1.
 ```
-./bin create --primary myNode1.com,myNode2.com,myNode3.com,myNode4.com --maximumWitnessCount 4 --didMethod key --maintainerKeyWord maintainer-key-secret
+./bin create --primary myNode1.com,myNode2.com,myNode3.com,myNode4.com --maximumWitnessCount 4 --didMethod key --maintainerKeySeed zMaintainerKeySeed
 ```
 
 For a `veres-one` ledger node:
 ```
-./bin create --primary myNode1.com,myNode2.com,myNode3.com,myNode4.com --maximumWitnessCount 4 --didMethod v1 --maintainerKeyWord maintainer-key-secret
+./bin create --primary myNode1.com,myNode2.com,myNode3.com,myNode4.com --maximumWitnessCount 4 --didMethod v1 --maintainerKeySeed zMaintainerKeySeed
 ```
 ### Update a Witness Pool Record
 
 These update examples use the cli aliases instead of the full option. Example `--primary` becomes `-p`.
 Additionally, we now have 7 nodes, so we can safely have one secondary node.
 ```
-./bin update -p myNode1.com,myNode2.com,myNode3.com,myNode4.com,myNode5.com,myNode6.com --secondary myNode7.com -w 6 -d key -k maintainer-key-secret
+./bin update -p myNode1.com,myNode2.com,myNode3.com,myNode4.com,myNode5.com,myNode6.com --secondary myNode7.com -w 6 -d key -k zMaintainerKeySeed
 ```
 
 For a `veres-one` ledger node:
 ```
-./bin update -p myNode1.com,myNode2.com,myNode3.com,myNode4.com,myNode5.com,myNode6.com -s myNode7.com -w 6 -d v1 -k maintainer-key-secret
+./bin update -p myNode1.com,myNode2.com,myNode3.com,myNode4.com,myNode5.com,myNode6.com -s myNode7.com -w 6 -d v1 -k zMaintainerKeySeed
 ```
 
 ### Send a Witness Pool Record
@@ -80,12 +80,12 @@ If non exists it calls on create.
 If a record already exists it will issue an update.
 
 ```
-./bin send -p myNode1.com,myNode2.com,myNode3.com,myNode4.com,myNode7.com,myNode6.com -s myNode5.com -w 6 -d key -k maintainer-key-secret
+./bin send -p myNode1.com,myNode2.com,myNode3.com,myNode4.com,myNode7.com,myNode6.com -s myNode5.com -w 6 -d key -k zMaintainerKeySeed
 ```
 
 For a `veres-one` ledger node:
 ```
-./bin send -p myNode1.com,myNode2.com,myNode3.com,myNode4.com,myNode7.com,myNode6.com -s myNode5.com -w 6 -d v1 -k maintainer-key-secret
+./bin send -p myNode1.com,myNode2.com,myNode3.com,myNode4.com,myNode7.com,myNode6.com -s myNode5.com -w 6 -d v1 -k zMaintainerKeySeed
 ```
 
 ### Fault Tolerance
