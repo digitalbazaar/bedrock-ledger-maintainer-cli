@@ -102,7 +102,6 @@ api.signOperation = async ({
         operation: opWithLedgerProof,
         capability: `urn:zcap:root:${encodeURIComponent(witnessPoolId)}`,
         capabilityAction: 'write',
-        invocationTarget: witnessPoolId,
         key,
         signer: key.signer()
       });

@@ -7,9 +7,7 @@ const crypto = require('crypto');
 const {WebLedgerClient} = require('web-ledger-client');
 const v1 = require('did-veres-one');
 const didKeyDriver = require('@digitalbazaar/did-method-key').driver();
-const {
-  Ed25519VerificationKey2020
-} = require('@digitalbazaar/ed25519-verification-key-2020');
+const {decodeSecretKeySeed} = require('bnid');
 
 /**
  * Takes in a potential url or domain and create a URL.
@@ -88,30 +86,31 @@ function deepClone(json) {
  * Either gets an existing key or creates a new one.
  *
  * @param {object} options - Options to use.
- * @param {object} options.maintainerKeyWord - A secret for a key.
+ * @param {object} options.maintainerKeySeed - A secret for a key.
  * @param {string} options.veresMode - The mode for veres-one.
  * @param {string} options.hostname - The veres one node host.
  *
  * @returns {Promise<object>} The resulting key and helpers methods.
  */
 async function getKey({
-  maintainerKeyWord,
+  maintainerKeySeed,
   didMethod,
   veresMode,
   httpsAgent,
   hostname
 }) {
+  const seed = decodeSecretKeySeed({secretKeySeed: maintainerKeySeed});
   switch(didMethod.toLowerCase()) {
     case 'v1': {
       return _createV1Key({
-        maintainerKeyWord,
         veresMode,
         httpsAgent,
-        hostname
+        hostname,
+        seed
       });
     }
     case 'key': {
-      return _createDIDKey({maintainerKeyWord});
+      return didKeyDriver.generate({seed});
     }
     default: {
       throw new Error(
@@ -120,8 +119,19 @@ async function getKey({
   }
 }
 
+/**
+ * Creates a veres one key.
+ *
+ * @param {object} options - Options to use.
+ * @param {Uint8Array} options.seed - A 32-byte Uint8Array.
+ * @param {string} options.veresMode - The mode for veres one.
+ * @param {object} options.httpsAgent - An https agent.
+ * @param {string} options.hostname - The Veres One hostname.
+ *
+ * @returns {Promise<object>} A veres one key.
+ */
 async function _createV1Key({
-  maintainerKeyWord,
+  seed,
   veresMode,
   httpsAgent,
   hostname
@@ -132,21 +142,7 @@ async function _createV1Key({
     hostname
   };
   const veresDriver = v1.driver(options);
-  const seed = _createSeed(maintainerKeyWord);
   return veresDriver.generate({seed});
-}
-
-async function _createDIDKey({maintainerKeyWord}) {
-  const seed = _createSeed(maintainerKeyWord);
-  return didKeyDriver.generate({seed});
-}
-
-function _createSeed(maintainerKeyWord) {
-  // FIXME this should support multi-codec
-  // creates 32 byte hashes for passwords
-  const hash32 = crypto.createHash('sha256');
-  hash32.update(maintainerKeyWord);
-  return hash32.digest();
 }
 
 module.exports = {

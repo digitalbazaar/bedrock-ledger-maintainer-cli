@@ -21,14 +21,14 @@ const {
  * @param {boolean} options.rejectUnauthorized - Should the httpsAgent reject
  *   invalid SSL certificates?
  * @param {string} options.veresMode - The mode for the veres one driver.
- * @param {string} [options.maintainerKeyWord = 'password'] - A secret for the
- *   maintainer key.
+ * @param {string} options.maintainerKeySeed - A bs58 encoded maintainer key
+ *   seed.
  */
 class App {
   constructor({
     primary, secondary, didMethod,
     keepAlive, rejectUnauthorized,
-    veresMode, maintainerKeyWord, maximumWitnessCount
+    veresMode, maintainerKeySeed, maximumWitnessCount
   }) {
     this.primary = primary;
     this.secondary = secondary;
@@ -36,7 +36,7 @@ class App {
     this.rejectUnauthorized = rejectUnauthorized;
     this.veresMode = veresMode;
     this.didMethod = didMethod;
-    this.maintainerKeyWord = maintainerKeyWord;
+    this.maintainerKeySeed = maintainerKeySeed;
     this.httpsAgent = new https.Agent({
       keepAlive,
       rejectUnauthorized
@@ -161,7 +161,7 @@ class App {
   async create() {
     const {
       httpsAgent,
-      maintainerKeyWord,
+      maintainerKeySeed,
       veresMode,
       didMethod,
       maximumWitnessCount,
@@ -170,7 +170,7 @@ class App {
     } = this;
     // get the maintainer key or generate a new one
     const {didDocument, methodFor} = await getKey({
-      maintainerKeyWord,
+      maintainerKeySeed,
       httpsAgent,
       didMethod,
       veresMode,
@@ -202,7 +202,7 @@ class App {
   async update({existingWitnessPool, meta}) {
     const {
       httpsAgent,
-      maintainerKeyWord,
+      maintainerKeySeed,
       veresMode,
       didMethod,
       maximumWitnessCount,
@@ -211,7 +211,7 @@ class App {
     } = this;
     // get the maintainer key or generate a new one
     const {methodFor} = await getKey({
-      maintainerKeyWord,
+      maintainerKeySeed,
       httpsAgent,
       didMethod,
       veresMode,
