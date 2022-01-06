@@ -3,13 +3,10 @@
  *  Copyright (c) 2021 Digital Bazaar, Inc. All rights reserved.
 */
 
-const crypto = require('crypto');
 const {WebLedgerClient} = require('web-ledger-client');
 const v1 = require('did-veres-one');
 const didKeyDriver = require('@digitalbazaar/did-method-key').driver();
-const {
-  Ed25519VerificationKey2020
-} = require('@digitalbazaar/ed25519-verification-key-2020');
+const {decodeSecretKeySeed} = require('bnid');
 
 /**
  * Takes in a potential url or domain and create a URL.
@@ -88,32 +85,34 @@ function deepClone(json) {
  * Either gets an existing key or creates a new one.
  *
  * @param {object} options - Options to use.
- * @param {object} options.maintainerKey - An public and private key.
+ * @param {object} options.maintainerKeySeed - A secret for a key.
  * @param {string} options.veresMode - The mode for veres-one.
  * @param {string} options.hostname - The veres one node host.
  *
  * @returns {Promise<object>} The resulting key and helpers methods.
  */
 async function getKey({
-  maintainerKey,
+  maintainerKeySeed,
   didMethod,
   veresMode,
   httpsAgent,
   hostname
 }) {
+  if(typeof maintainerKeySeed !== 'string') {
+    throw new Error('Expected maintainerKeySeed to be a bs58 encoded string.');
+  }
+  const seed = decodeSecretKeySeed({secretKeySeed: maintainerKeySeed});
   switch(didMethod.toLowerCase()) {
     case 'v1': {
       return _createV1Key({
-        maintainerKey,
         veresMode,
         httpsAgent,
-        hostname
+        hostname,
+        seed
       });
     }
     case 'key': {
-      return _createDIDKey({
-        maintainerKey,
-      });
+      return didKeyDriver.generate({seed});
     }
     default: {
       throw new Error(
@@ -122,31 +121,30 @@ async function getKey({
   }
 }
 
-async function _createV1Key({maintainerKey, veresMode, httpsAgent, hostname}) {
+/**
+ * Creates a veres one key.
+ *
+ * @param {object} options - Options to use.
+ * @param {Uint8Array} options.seed - A 32-byte Uint8Array.
+ * @param {string} options.veresMode - The mode for veres one.
+ * @param {object} options.httpsAgent - An https agent.
+ * @param {string} options.hostname - The Veres One hostname.
+ *
+ * @returns {Promise<object>} A veres one key.
+ */
+async function _createV1Key({
+  seed,
+  veresMode,
+  httpsAgent,
+  hostname
+}) {
   const options = {
     mode: veresMode,
     httpsAgent,
     hostname
   };
   const veresDriver = v1.driver(options);
-
-  if(!maintainerKey) {
-    return veresDriver.generate(
-      {didType: 'nym', keyType: 'Ed25519VerificationKey2020'});
-  }
-  // this a json object with public and private key material
-  const keyOps = require(maintainerKey);
-  const invokeKey = new Ed25519VerificationKey2020(keyOps);
-  return veresDriver.generate({invokeKey});
-}
-
-async function _createDIDKey({maintainerKey}) {
-  // FIXME this should support multi-codec
-  // creates 32 byte hashes for passwords
-  const hash32 = crypto.createHash('sha256');
-  hash32.update(maintainerKey);
-  const seed = hash32.digest();
-  return didKeyDriver.generate({seed});
+  return veresDriver.generate({seed});
 }
 
 module.exports = {

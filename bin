@@ -26,11 +26,9 @@ function _setupCLIOptions() {
       alias: 's',
       describe: 'A comma separated list of secondary nodes',
       default: ''
-    }).option('maintainerKey', {
+    }).option('maintainerKeySeed', {
       alias: 'k',
-      describe: 'A maintainer secret or a file containing ' +
-        'material for a v1 key',
-      default: 'password'
+      describe: 'A bs58 encoded maintainer key seed',
     }).option('keepAlive', {
       alias: 'a',
       describe: 'Whether to keep the httpsAgent agent alive',
